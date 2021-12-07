@@ -1,4 +1,4 @@
-# TrainingQT
-Trying to get better in QT
+# QT5Template
+Acts as a PyQT5-template for python projects.
 
-Install PyQT as follows: https://pythonpyqt.com/how-to-install-pyqt5-in-pycharm/
+Installation-guide for PyQT5 in Pycharm: https://pythonpyqt.com/how-to-install-pyqt5-in-pycharm/
