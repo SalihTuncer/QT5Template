@@ -1,62 +1,88 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QComboBox, QHBoxLayout
+from PyQt5.QtWidgets import QPushButton, QComboBox, QLabel, QWidget, QGridLayout, QLineEdit, \
+    QMessageBox, QRadioButton, QCheckBox
+
 from PyQt5.QtCore import pyqtSlot
 
 
-class App(QWidget):
+class Gui(QWidget):
 
     def __init__(self):
         super().__init__()
         self.title = 'Edge Configurator'
-        self.width = 600
-        self.height = 400
-        self.initUI()
+        self.drops = []
+        self.init_ui()
 
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.resize(self.width, self.height)
+    def init_ui(self):
 
-        self.boxes = []
+        b1 = self.add_button(self.on_click)
 
-        self.add_button(450, 100, self.on_click)
-        self.add_button(450, 150, self.on_click)
-        self.add_button(450, 200, self.on_click)
+        d1 = self.add_dropdown(self.selection)
+        d2 = self.add_dropdown(self.selection)
 
-        self.add_QComboBox(50, 100, self.selectionchange)
-        self.add_QComboBox(50, 150, self.selectionchange)
-        self.add_QComboBox(50, 200, self.selectionchange)
+        c1 = self.add_check_box(self.click_box)
+        c2 = self.add_check_box(self.click_box)
 
-        self.show()
+        e1 = QLineEdit('localhost')
+        e2 = QLineEdit('8080')
 
-    def add_QComboBox(self, x, y, fct, item='C', items=['Java', 'C#', 'Python']):
-        q_combo_box = QComboBox(self)
-        self.boxes.append(q_combo_box)
-        q_combo_box.move(x, y)
-        q_combo_box.addItem(item)
-        q_combo_box.addItems(items)
-        i = len(self.boxes) - 1
-        q_combo_box.currentIndexChanged.connect(lambda: fct(i))
+        r1 = QRadioButton("&intern")
+        r1.setChecked(True)
+        r2 = QRadioButton("&extern")
 
-    def selectionchange(self, i):
-        print("Items in the list are :")
+        layout = QGridLayout()
 
-        for count in range(self.boxes[i].count()):
-            print(self.boxes[i].itemText(count))
-        print("Current index", i, "selection changed ", self.boxes[i].currentText())
+        layout.addWidget(QLabel("Language:"), 0, 0)
+        layout.addWidget(d1, 0, 1)
+        layout.addWidget(d2, 0, 2)
+
+        layout.addWidget(QLabel("Domain:"), 1, 0)
+        layout.addWidget(e1, 1, 1)
+        layout.addWidget(e2, 1, 2)
+
+        layout.addWidget(QLabel("Scope:"), 2, 0)
+        layout.addWidget(r1, 2, 1)
+        layout.addWidget(r2, 2, 2)
+
+        layout.addWidget(QLabel("Chess:"), 3, 0)
+        layout.addWidget(c1, 3, 1)
+        layout.addWidget(c2, 3, 2)
+
+        layout.addWidget(b1, 4, 2)
+        self.setLayout(layout)
+
+    def add_dropdown(self, fct, items=None):
+        if items is None:
+            items = ['Java', 'Python', 'R']
+        dropdown = QComboBox(self)
+        self.drops.append(dropdown)
+        dropdown.addItems(items)
+        i = len(self.drops) - 1
+        dropdown.currentIndexChanged.connect(lambda: fct(i))
+        return dropdown
+
+    def selection(self, i):
+        print("Current index", self.drops[i].currentIndex(), "selected element", self.drops[i].currentText())
 
     # normal button where you can define what to do if its is clicked or where it should be placed
-    def add_button(self, x, y, fct, name="Confirm", tooltip="Button"):
+    def add_button(self, fct, name="Confirm", tooltip=None):
         button = QPushButton(name, self)
-        button.setToolTip(tooltip)
-        button.move(x, y)
+        if tooltip:
+            button.setToolTip(tooltip)
         button.clicked.connect(fct)
+        return button
 
     @pyqtSlot()
     def on_click(self):
-        print('PyQt5 button click')
+        QMessageBox.about(self, self.title, "Configuration applied")
 
+    def add_check_box(self, fct, name='Check Mate'):
+        cb = QCheckBox(name, self)
+        cb.stateChanged.connect(lambda: fct(cb))
+        return cb
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = App()
-    sys.exit(app.exec_())
+    @pyqtSlot()
+    def click_box(self, cb):
+        if cb.isChecked():
+            print('Checked')
+        else:
+            print('Unchecked')
