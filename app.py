@@ -15,6 +15,11 @@ class App(QMainWindow):
         self._gui = Gui(self.title)
         self.setCentralWidget(self._gui)
 
+        self.resolution_bar()
+
+        self.show()
+
+    def resolution_bar(self):
         # we put multiple actions which change the resolution into a list
         resolutions = []
         res_640x320 = self.add_action('&640x320', lambda: self.change_res(640, 320))
@@ -27,7 +32,6 @@ class App(QMainWindow):
         resolutions.append(res_2160x1080)
         # and give them to the menu bar as actions to choose from
         self.add_menu_bar('&Resolution', resolutions)
-        self.show()
 
     def add_action(self, name, fct, shortcut=None):
         action = QAction(name, self)
