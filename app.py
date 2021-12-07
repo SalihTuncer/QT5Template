@@ -8,21 +8,23 @@ class App(QMainWindow):
         super().__init__()
         self.title = 'Edge Configurator'
         self.width = 640
-        self.height = 480
+        self.height = 320
         self.setWindowTitle(self.title)
         self.resize(self.width, self.height)
 
-        self._gui = Gui()
+        self._gui = Gui(self.title)
         self.setCentralWidget(self._gui)
 
         # we put multiple actions which change the resolution into a list
         resolutions = []
-        res_800x600 = self.add_action('&800x600', lambda: self.change_res(800, 600))
-        resolutions.append(res_800x600)
-        res_960x720 = self.add_action('&960x720', lambda: self.change_res(960, 720))
-        resolutions.append(res_960x720)
-        res_1024x768 = self.add_action('&1024x768', lambda: self.change_res(1024, 768))
-        resolutions.append(res_1024x768)
+        res_640x320 = self.add_action('&640x320', lambda: self.change_res(640, 320))
+        resolutions.append(res_640x320)
+        res_960x480 = self.add_action('&960x480', lambda: self.change_res(960, 480))
+        resolutions.append(res_960x480)
+        res_1440x720 = self.add_action('&1440x720', lambda: self.change_res(1440, 720))
+        resolutions.append(res_1440x720)
+        res_2160x1080 = self.add_action('&2160x1080', lambda: self.change_res(2160, 1080))
+        resolutions.append(res_2160x1080)
         # and give them to the menu bar as actions to choose from
         self.add_menu_bar('&Resolution', resolutions)
         self.show()

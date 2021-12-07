@@ -1,20 +1,21 @@
 from PyQt5.QtWidgets import QPushButton, QComboBox, QLabel, QWidget, QGridLayout, QLineEdit, \
-    QMessageBox, QRadioButton, QCheckBox
+    QMessageBox, QRadioButton, QCheckBox, QListWidget, QListWidgetItem
 
 from PyQt5.QtCore import pyqtSlot
+import random
 
 
 class Gui(QWidget):
 
-    def __init__(self):
+    def __init__(self, title):
         super().__init__()
-        self.title = 'Edge Configurator'
+        self.title = title
         self.drops = []
         self.init_ui()
 
     def init_ui(self):
 
-        b1 = self.add_button(self.on_click)
+        b1 = self.add_button(self.on_click, 'Configuration applied')
 
         d1 = self.add_dropdown(self.selection)
         d2 = self.add_dropdown(self.selection)
@@ -28,6 +29,8 @@ class Gui(QWidget):
         r1 = QRadioButton("&intern")
         r1.setChecked(True)
         r2 = QRadioButton("&extern")
+
+        l1 = self.add_list()
 
         layout = QGridLayout()
 
@@ -47,7 +50,9 @@ class Gui(QWidget):
         layout.addWidget(c1, 3, 1)
         layout.addWidget(c2, 3, 2)
 
-        layout.addWidget(b1, 4, 2)
+        layout.addWidget(l1, 4, 0)
+
+        layout.addWidget(b1, 5, 2)
         self.setLayout(layout)
 
     def add_dropdown(self, fct, items=None):
@@ -60,20 +65,25 @@ class Gui(QWidget):
         dropdown.currentIndexChanged.connect(lambda: fct(i))
         return dropdown
 
+    @pyqtSlot()
     def selection(self, i):
         print("Current index", self.drops[i].currentIndex(), "selected element", self.drops[i].currentText())
 
     # normal button where you can define what to do if its is clicked or where it should be placed
-    def add_button(self, fct, name="Confirm", tooltip=None):
+    def add_button(self, fct, message_text, name="Confirm", tooltip=None):
         button = QPushButton(name, self)
         if tooltip:
             button.setToolTip(tooltip)
-        button.clicked.connect(fct)
+        button.clicked.connect(lambda: fct(message_text))
         return button
 
     @pyqtSlot()
-    def on_click(self):
-        QMessageBox.about(self, self.title, "Configuration applied")
+    def on_click(self, text):
+        msg = QMessageBox(self)
+        msg.setWindowTitle(self.title)
+        msg.setText(text)
+        msg.setIcon(QMessageBox.Information)
+        msg.exec_()
 
     def add_check_box(self, fct, name='Check Mate'):
         cb = QCheckBox(name, self)
@@ -86,3 +96,24 @@ class Gui(QWidget):
             print('Checked')
         else:
             print('Unchecked')
+
+    def add_list(self, items=None):
+        if items is None:
+            items = ['Java', 'Python', 'R'] * 10
+        random.shuffle(items)
+
+        list_widget = QListWidget(self)
+        for item in items:
+            list_widget.addItem(QListWidgetItem(item))
+
+        list_widget.itemClicked.connect(lambda: self.on_list_click(list_widget))
+        list_widget.setGeometry(50, 70, 50, 80)
+        list_widget.setDragDropMode(3)
+        list_widget.setAutoScroll(True)
+        list_widget.setAutoScrollMargin(3)
+        list_widget.setWordWrap(True)
+        return list_widget
+
+    @pyqtSlot()
+    def on_list_click(self, list_widget):
+        print(list_widget.currentItem().text())
